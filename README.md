@@ -1,5 +1,3 @@
-<!-- Copyright (c) 2025 Darren Soothill - darren [at] soothill dot com -->
-
 # n8n_deploy
 
 Podman + nginx deployment assets for running n8n on openSUSE MicroOS.
@@ -56,3 +54,7 @@ sudo nginx -t && sudo systemctl reload nginx
 - Check status: `sudo systemctl status container-n8n.service container-n8n-postgres.service`
 - View logs: `sudo journalctl -u container-n8n.service -f`
 - Auto-updates: Podman is labeled for `io.containers.autoupdate=registry` if enabled on the host.
+
+---
+
+© 2025 Darren Soothill - darren [at] soothill dot com
