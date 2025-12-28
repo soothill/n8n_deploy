@@ -59,9 +59,17 @@ if ! sudo "${GEN_BIN}" &> "${GEN_LOG}"; then
 fi
 sudo systemctl daemon-reload
 
-if [ ! -f /run/systemd/generator/container-n8n.service ]; then
-  echo "Generated unit /run/systemd/generator/container-n8n.service is missing."
-  echo "Check podman-quadlet installation and version, then rerun this script."
+GEN_SERVICE="$(find /run/systemd -maxdepth 4 -name 'container-n8n.service' -print -quit)"
+GEN_PG_SERVICE="$(find /run/systemd -maxdepth 4 -name 'container-n8n-postgres.service' -print -quit)"
+
+if [ -z "${GEN_SERVICE}" ] || [ -z "${GEN_PG_SERVICE}" ]; then
+  echo "Generated quadlet services are missing."
+  echo "Checked locations under /run/systemd; found:"
+  find /run/systemd -maxdepth 3 -name 'container-*.service' -print
+  echo "Inputs in /etc/containers/systemd:"
+  ls -l /etc/containers/systemd
+  echo "Generator log: ${GEN_LOG}"
+  cat "${GEN_LOG}"
   exit 1
 fi
 
