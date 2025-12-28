@@ -6,7 +6,7 @@ NGINX_CONF_DEST ?= /etc/nginx/conf.d/$(DOMAIN).conf
 WEBROOT ?= /var/www/letsencrypt
 ENV_FILE ?= deploy/podman/n8n.env
 
-.PHONY: help env install-units nginx-http nginx-https cert deploy status logs secure check-dns remove
+.PHONY: help env install-units nginx-http nginx-https cert deploy status logs secure check-dns remove status-podman
 
 help:
 	@echo "Targets:"
@@ -20,6 +20,7 @@ help:
 	@echo "  check-dns       Validate that $(DOMAIN) resolves"
 	@echo "  remove          Stop/disable services and remove quadlet/nginx configs (data volumes stay)"
 	@echo "  status          Show systemd status for n8n services"
+	@echo "  status-podman   Show podman container status for n8n services"
 	@echo "  logs            Tail n8n service logs"
 
 env:
@@ -81,3 +82,6 @@ status:
 
 logs:
 	sudo journalctl -u container-n8n.service -f
+
+status-podman:
+	sudo podman ps --format '{{.Names}}\t{{.Status}}\t{{.Ports}}'
