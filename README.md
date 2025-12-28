@@ -42,7 +42,7 @@ Podman + nginx deployment assets for running n8n on openSUSE MicroOS.
 ```bash
 N8N_ENV_SRC="$(pwd)/deploy/podman/n8n.env" ./scripts/apply-podman-units.sh
 # HTTP bootstrap (must be in place before cert request)
-sudo install -d /var/www/letsencrypt/.well-known/acme-challenge
+sudo install -d /srv/www/htdocs/letsencrypt/.well-known/acme-challenge
 sudo install -m 644 deploy/nginx/n8n.soothill.com.http.conf /etc/nginx/conf.d/n8n.soothill.com.conf
 sudo nginx -t && sudo systemctl restart nginx || true
 sudo systemctl is-active nginx >/dev/null || sudo systemctl start nginx
