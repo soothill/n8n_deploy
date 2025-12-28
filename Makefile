@@ -3,7 +3,7 @@
 DOMAIN ?= n8n.soothill.com
 EMAIL ?=
 NGINX_CONF_DEST ?= /etc/nginx/conf.d/$(DOMAIN).conf
-WEBROOT ?= /var/www/letsencrypt
+WEBROOT ?= /srv/www/letsencrypt
 ENV_FILE ?= deploy/podman/n8n.env
 
 .PHONY: help env install-units nginx-http nginx-https cert deploy status logs secure check-dns remove status-podman

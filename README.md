@@ -42,16 +42,19 @@ Podman + nginx deployment assets for running n8n on openSUSE MicroOS.
 ```bash
 N8N_ENV_SRC="$(pwd)/deploy/podman/n8n.env" ./scripts/apply-podman-units.sh
 # HTTP bootstrap (must be in place before cert request)
-sudo install -d /var/www/letsencrypt
+sudo install -d /srv/www/letsencrypt
 sudo install -m 644 deploy/nginx/n8n.soothill.com.http.conf /etc/nginx/conf.d/n8n.soothill.com.conf
-sudo nginx -t && sudo systemctl reload nginx
+sudo nginx -t && sudo systemctl restart nginx || true
+sudo systemctl is-active nginx >/dev/null || sudo systemctl start nginx
 
 # Request certificate (requires port 80 reachable)
-EMAIL=you@example.com ./scripts/request-cert.sh && sudo systemctl reload nginx
+EMAIL=you@example.com ./scripts/request-cert.sh && sudo systemctl restart nginx || true
+sudo systemctl is-active nginx >/dev/null || sudo systemctl start nginx
 
 # Switch to HTTPS vhost (after cert exists at /etc/letsencrypt/live/n8n.soothill.com/)
 sudo install -m 644 deploy/nginx/n8n.soothill.com.conf /etc/nginx/conf.d/n8n.soothill.com.conf
-sudo nginx -t && sudo systemctl reload nginx
+sudo nginx -t && sudo systemctl restart nginx || true
+sudo systemctl is-active nginx >/dev/null || sudo systemctl start nginx
 ```
 
 ## Managing the stack
