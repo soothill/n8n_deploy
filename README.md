@@ -32,6 +32,7 @@ Podman + nginx deployment assets for running n8n on openSUSE MicroOS.
 - `make nginx-https` — switches nginx to the HTTPS/redirecting vhost after a cert exists.
 - `make secure` — runs `make cert` then `make nginx-https`.
 - `make check-dns` — validates that `$(DOMAIN)` resolves (prerequisite for cert).
+- `make remove` — stops/disables services and removes quadlet and nginx config files (volumes/certs stay on disk).
 - `make status` — shows systemd status for n8n and Postgres.
 - `make logs` — tails n8n service logs.
 

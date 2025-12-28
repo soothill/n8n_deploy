@@ -6,7 +6,7 @@ NGINX_CONF_DEST ?= /etc/nginx/conf.d/$(DOMAIN).conf
 WEBROOT ?= /var/www/letsencrypt
 ENV_FILE ?= deploy/podman/n8n.env
 
-.PHONY: help env install-units nginx-http nginx-https cert deploy status logs secure check-dns
+.PHONY: help env install-units nginx-http nginx-https cert deploy status logs secure check-dns remove
 
 help:
 	@echo "Targets:"
@@ -18,6 +18,7 @@ help:
 	@echo "  deploy          Run env -> install-units -> nginx-http"
 	@echo "  secure          Run cert -> nginx-https (after DNS/ports are ready)"
 	@echo "  check-dns       Validate that $(DOMAIN) resolves"
+	@echo "  remove          Stop/disable services and remove quadlet/nginx configs (data volumes stay)"
 	@echo "  status          Show systemd status for n8n services"
 	@echo "  logs            Tail n8n service logs"
 
@@ -63,6 +64,17 @@ check-dns:
 		echo "DNS lookup failed for $(DOMAIN). Verify your A/AAAA records."; \
 		exit 1; \
 	fi
+
+remove:
+	@echo "Stopping and disabling systemd units..."
+	sudo systemctl disable --now container-n8n.service container-n8n-postgres.service podman-network-n8n.service || true
+	@echo "Removing quadlet files..."
+	sudo rm -f /etc/containers/systemd/n8n.container /etc/containers/systemd/n8n-postgres.container /etc/containers/systemd/n8n.network
+	sudo systemctl daemon-reload
+	@echo "Removing nginx vhost if present..."
+	@if [ -f $(NGINX_CONF_DEST) ]; then sudo rm -f $(NGINX_CONF_DEST); fi
+	@if command -v nginx >/dev/null 2>&1; then sudo nginx -t && sudo systemctl reload nginx; fi
+	@echo "Removal complete. Data volumes and certificates remain; prune manually if desired."
 
 status:
 	sudo systemctl status container-n8n.service container-n8n-postgres.service
