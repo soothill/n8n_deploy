@@ -95,8 +95,10 @@ if [ -z "${GEN_SERVICE}" ] || [ -z "${GEN_PG_SERVICE}" ]; then
     docker.io/n8nio/n8n:latest
 
   echo "Generating systemd units via podman generate systemd..."
-  $SUDO podman generate systemd --name n8n-postgres --new --files --restart-policy=always --dest /etc/systemd/system
-  $SUDO podman generate systemd --name n8n --new --files --restart-policy=always --dest /etc/systemd/system
+  $SUDO podman generate systemd --name n8n-postgres --new --restart-policy=always > /tmp/container-n8n-postgres.service
+  $SUDO podman generate systemd --name n8n --new --restart-policy=always > /tmp/container-n8n.service
+  $SUDO install -m 644 /tmp/container-n8n-postgres.service /etc/systemd/system/container-n8n-postgres.service
+  $SUDO install -m 644 /tmp/container-n8n.service /etc/systemd/system/container-n8n.service
 
   $SUDO systemctl daemon-reload
   $SUDO systemctl enable --now container-n8n-postgres.service container-n8n.service
