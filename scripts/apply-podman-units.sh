@@ -74,14 +74,34 @@ GEN_SERVICE="$(find /run/systemd -maxdepth 4 -name 'container-n8n.service' -prin
 GEN_PG_SERVICE="$(find /run/systemd -maxdepth 4 -name 'container-n8n-postgres.service' -print -quit)"
 
 if [ -z "${GEN_SERVICE}" ] || [ -z "${GEN_PG_SERVICE}" ]; then
-  echo "Generated quadlet services are missing."
-  echo "Checked locations under /run/systemd; found:"
-  find /run/systemd -maxdepth 3 -name 'container-*.service' -print
-  echo "Inputs in /etc/containers/systemd:"
-  ls -l /etc/containers/systemd
+  echo "Generated quadlet services are missing; falling back to podman generate systemd."
   echo "Generator log (exit ${GEN_RC}): ${GEN_LOG}"
   cat "${GEN_LOG}"
-  exit 1
+
+  echo "Creating containers if absent..."
+  $SUDO podman container exists n8n-postgres || $SUDO podman create --name n8n-postgres \
+    --network n8n \
+    --env-file "${ENV_DEST}" \
+    -v n8n-postgres:/var/lib/postgresql/data:Z \
+    -p 127.0.0.1:5432:5432 \
+    docker.io/library/postgres:16-alpine
+
+  $SUDO podman container exists n8n || $SUDO podman create --name n8n \
+    --network n8n \
+    --env-file "${ENV_DEST}" \
+    -v n8n-data:/home/node/.n8n:Z \
+    -v n8n-files:/files:Z \
+    -p 127.0.0.1:5678:5678 \
+    docker.io/n8nio/n8n:latest
+
+  echo "Generating systemd units via podman generate systemd..."
+  $SUDO podman generate systemd --name n8n-postgres --new --files --restart-policy=always --dest /etc/systemd/system
+  $SUDO podman generate systemd --name n8n --new --files --restart-policy=always --dest /etc/systemd/system
+
+  $SUDO systemctl daemon-reload
+  $SUDO systemctl enable --now container-n8n-postgres.service container-n8n.service
+  $SUDO systemctl status container-n8n.service --no-pager
+  exit 0
 fi
 
 $SUDO systemctl enable --now container-n8n-postgres.service container-n8n.service
