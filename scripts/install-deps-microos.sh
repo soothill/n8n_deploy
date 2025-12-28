@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-PACKAGES="make podman nginx certbot"
+PACKAGES="make podman podman-quadlet nginx certbot"
 REBOOT="${REBOOT:-false}"
 
 if ! command -v transactional-update >/dev/null 2>&1; then

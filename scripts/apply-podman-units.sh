@@ -9,6 +9,11 @@ DEST="/etc/containers/systemd"
 ENV_DEST="/etc/n8n/n8n.env"
 ENV_SRC="${N8N_ENV_SRC:-${SRC}/n8n.env}"
 
+if [ ! -x /usr/lib/systemd/system-generators/podman-system-generator ]; then
+  echo "Podman quadlet generator not found. Install podman-quadlet (e.g., sudo transactional-update pkg install podman-quadlet) and reboot."
+  exit 1
+fi
+
 echo "Applying quadlet definitions from ${SRC}..."
 sudo install -d "${DEST}" /etc/n8n
 sudo install -m 644 "${SRC}/n8n.network" "${DEST}/n8n.network"
