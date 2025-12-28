@@ -6,7 +6,7 @@ set -euo pipefail
 DOMAIN="${DOMAIN:-n8n.soothill.com}"
 EMAIL="${EMAIL:-}"
 WEBROOT="/var/www/letsencrypt"
-CERTBOT_IMAGE="${CERTBOT_IMAGE:-quay.io/certbot/certbot:latest}"
+CERTBOT_IMAGE="${CERTBOT_IMAGE:-docker.io/certbot/certbot:latest}"
 
 if [[ -z "${EMAIL}" ]]; then
   echo "Set EMAIL=<your email> to request the certificate."
