@@ -31,6 +31,15 @@ else
   echo "Environment file ${ENV_DEST} already exists; leaving untouched."
 fi
 
+echo "Regenerating systemd units via podman-system-generator..."
+sudo /usr/lib/systemd/system-generators/podman-system-generator
 sudo systemctl daemon-reload
+
+if [ ! -f /run/systemd/generator/podman-network-n8n.service ]; then
+  echo "Generated unit /run/systemd/generator/podman-network-n8n.service is missing."
+  echo "Check podman-quadlet installation and version, then rerun this script."
+  exit 1
+fi
+
 sudo systemctl enable --now podman-network-n8n.service container-n8n-postgres.service container-n8n.service
 sudo systemctl status container-n8n.service --no-pager
