@@ -1,3 +1,5 @@
+# Copyright (c) 2025 Darren Soothill - darren [at] soothill dot com
+
 [Unit]
 Description=n8n automation service (Podman)
 After=network-online.target podman-network-n8n.service container-n8n-postgres.service

@@ -1,3 +1,5 @@
+<!-- Copyright (c) 2025 Darren Soothill - darren [at] soothill dot com -->
+
 # Repository Guidelines
 
 ## Project Structure & Module Organization

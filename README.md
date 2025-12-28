@@ -1,3 +1,5 @@
+<!-- Copyright (c) 2025 Darren Soothill - darren [at] soothill dot com -->
+
 # n8n_deploy
 
 Podman + nginx deployment assets for running n8n on openSUSE MicroOS.

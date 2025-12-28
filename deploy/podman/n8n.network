@@ -1,3 +1,5 @@
+# Copyright (c) 2025 Darren Soothill - darren [at] soothill dot com
+
 [Unit]
 Description=Podman network for n8n stack
 

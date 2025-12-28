@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (c) 2025 Darren Soothill - darren [at] soothill dot com
+
 set -euo pipefail
 
 DOMAIN="${DOMAIN:-n8n.soothill.com}"

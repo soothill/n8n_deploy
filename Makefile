@@ -1,3 +1,5 @@
+# Copyright (c) 2025 Darren Soothill - darren [at] soothill dot com
+
 DOMAIN ?= n8n.soothill.com
 EMAIL ?=
 NGINX_CONF_DEST ?= /etc/nginx/conf.d/$(DOMAIN).conf

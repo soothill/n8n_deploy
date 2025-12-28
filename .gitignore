@@ -1,2 +1,4 @@
+# Copyright (c) 2025 Darren Soothill - darren [at] soothill dot com
+
 # Local secrets/config
 deploy/podman/n8n.env
