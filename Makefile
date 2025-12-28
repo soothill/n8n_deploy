@@ -38,13 +38,13 @@ nginx-http:
 	sudo install -d $(WEBROOT)
 	sudo install -m 644 deploy/nginx/n8n.soothill.com.http.conf $(NGINX_CONF_DEST)
 	sudo nginx -t
-	sudo systemctl reload nginx
+	sudo systemctl restart nginx || sudo systemctl start nginx
 
 nginx-https:
 	@if [ ! -f /etc/letsencrypt/live/$(DOMAIN)/fullchain.pem ]; then echo "Missing cert for $(DOMAIN). Run: make cert EMAIL=you@example.com"; exit 1; fi
 	sudo install -m 644 deploy/nginx/n8n.soothill.com.conf $(NGINX_CONF_DEST)
 	sudo nginx -t
-	sudo systemctl reload nginx
+	sudo systemctl restart nginx || sudo systemctl start nginx
 
 cert:
 	@if [ -z "$(EMAIL)" ]; then echo "Set EMAIL=<you@example.com> to request a cert"; exit 1; fi
@@ -52,7 +52,7 @@ cert:
 	$(MAKE) check-dns
 	WEBROOT=$(WEBROOT) DOMAIN=$(DOMAIN) EMAIL=$(EMAIL) ./scripts/request-cert.sh
 	sudo nginx -t
-	sudo systemctl reload nginx
+	sudo systemctl restart nginx || sudo systemctl start nginx
 
 deploy: env install-units nginx-http
 
