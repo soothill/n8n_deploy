@@ -3,7 +3,7 @@
 Podman + nginx deployment assets for running n8n on openSUSE MicroOS.
 
 ## What this repo contains
-- Quadlet definitions for Podman-managed services: `deploy/podman/n8n.container`, `deploy/podman/n8n-postgres.container`, and `deploy/podman/n8n.network`.
+- Quadlet definitions for Podman-managed services: `deploy/podman/n8n.container`, `deploy/podman/n8n-postgres.container`.
 - Environment template: `deploy/podman/n8n.env.example` (copy to `deploy/podman/n8n.env`, which is gitignored, then pushed to `/etc/n8n/n8n.env`).
 - Nginx HTTP bootstrap vhost: `deploy/nginx/n8n.soothill.com.http.conf` (serves ACME challenges and proxies n8n over HTTP).
 - Nginx HTTPS vhost: `deploy/nginx/n8n.soothill.com.conf` (redirects HTTP -> HTTPS and proxies n8n).

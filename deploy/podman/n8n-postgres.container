@@ -2,8 +2,8 @@
 
 [Unit]
 Description=n8n Postgres database (Podman)
-After=network-online.target podman-network-n8n.service
-Requires=podman-network-n8n.service
+After=network-online.target
+Requires=network-online.target
 Wants=network-online.target
 
 [Container]

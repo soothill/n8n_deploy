@@ -2,8 +2,8 @@
 
 [Unit]
 Description=n8n automation service (Podman)
-After=network-online.target podman-network-n8n.service container-n8n-postgres.service
-Requires=podman-network-n8n.service container-n8n-postgres.service
+After=network-online.target container-n8n-postgres.service
+Requires=network-online.target container-n8n-postgres.service
 Wants=network-online.target
 
 [Container]
