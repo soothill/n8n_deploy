@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Copyright (c) 2025 Darren Soothill - darren [at] soothill dot com
+
+set -euo pipefail
+
+PACKAGES="make podman nginx certbot"
+REBOOT="${REBOOT:-false}"
+
+if ! command -v transactional-update >/dev/null 2>&1; then
+  echo "transactional-update not found. This helper is intended for openSUSE MicroOS."
+  exit 1
+fi
+
+echo "Installing packages: ${PACKAGES}"
+sudo transactional-update pkg install -y ${PACKAGES}
+
+if [ "${REBOOT}" = "true" ]; then
+  echo "Rebooting to apply transactional changes..."
+  sudo reboot
+else
+  echo "Transactional install queued. Reboot the host to activate the new packages."
+fi

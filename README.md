@@ -14,6 +14,10 @@ Podman + nginx deployment assets for running n8n on openSUSE MicroOS.
 - openSUSE MicroOS host with Podman and systemd quadlet support.
 - Existing nginx installation (listening on :80/:443) and DNS A/AAAA pointing `n8n.soothill.com` to this host.
 - Ports 80 and 443 open to the internet for ACME HTTP-01.
+- To install base tools (make, podman, nginx, certbot) on MicroOS, run:
+  ```bash
+  ./scripts/install-deps-microos.sh   # set REBOOT=true to reboot automatically
+  ```
 
 ## Configuration
 - Create a working env file (gitignored) from the example and set secrets:
