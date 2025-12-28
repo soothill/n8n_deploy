@@ -57,8 +57,12 @@ $SUDO podman network inspect n8n >/dev/null 2>&1 || $SUDO podman network create 
 
 echo "Regenerating systemd units via podman-system-generator..."
 GEN_LOG="$(mktemp /tmp/podman-quadlet-gen.XXXX.log)"
+OUT_EARLY="/run/systemd/generator.early"
+OUT_MAIN="/run/systemd/generator"
+OUT_LATE="/run/systemd/generator.late"
+$SUDO install -d "${OUT_EARLY}" "${OUT_MAIN}" "${OUT_LATE}"
 set +e
-$SUDO "${GEN_BIN}" &> "${GEN_LOG}"
+$SUDO "${GEN_BIN}" "${OUT_MAIN}" "${OUT_LATE}" "${OUT_EARLY}" &> "${GEN_LOG}"
 GEN_RC=$?
 set -e
 if [ "${GEN_RC}" -ne 0 ]; then
