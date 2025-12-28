@@ -8,6 +8,11 @@ SRC="${REPO_ROOT}/deploy/podman"
 DEST="/etc/containers/systemd"
 ENV_DEST="/etc/n8n/n8n.env"
 ENV_SRC="${N8N_ENV_SRC:-${SRC}/n8n.env}"
+SUDO="sudo"
+if [ "$(id -u)" -eq 0 ]; then
+  SUDO=""
+fi
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/0}"
 
 if ! command -v podman >/dev/null 2>&1; then
   echo "Podman is required. Install podman and retry."
@@ -32,34 +37,34 @@ if [ -z "${GEN_BIN}" ]; then
 fi
 
 echo "Applying quadlet definitions from ${SRC}..."
-sudo install -d "${DEST}" /etc/n8n
-sudo install -m 644 "${SRC}/n8n-postgres.container" "${DEST}/n8n-postgres.container"
-sudo install -m 644 "${SRC}/n8n.container" "${DEST}/n8n.container"
+$SUDO install -d "${DEST}" /etc/n8n
+$SUDO install -m 644 "${SRC}/n8n-postgres.container" "${DEST}/n8n-postgres.container"
+$SUDO install -m 644 "${SRC}/n8n.container" "${DEST}/n8n.container"
 
 if [ ! -f "${ENV_DEST}" ]; then
   if [ ! -f "${ENV_SRC}" ]; then
     echo "Environment source ${ENV_SRC} not found. Create it (e.g., copy n8n.env.example) and set secrets."
     exit 1
   fi
-  sudo install -m 640 "${ENV_SRC}" "${ENV_DEST}"
+  $SUDO install -m 640 "${ENV_SRC}" "${ENV_DEST}"
   echo "Created ${ENV_DEST} from ${ENV_SRC}. Update secrets before starting services."
 else
   echo "Environment file ${ENV_DEST} already exists; leaving untouched."
 fi
 
 echo "Ensuring Podman network 'n8n' exists..."
-sudo podman network inspect n8n >/dev/null 2>&1 || sudo podman network create --driver bridge --subnet 10.89.0.0/24 --gateway 10.89.0.1 n8n
+$SUDO podman network inspect n8n >/dev/null 2>&1 || $SUDO podman network create --driver bridge --subnet 10.89.0.0/24 --gateway 10.89.0.1 n8n
 
 echo "Regenerating systemd units via podman-system-generator..."
 GEN_LOG="$(mktemp /tmp/podman-quadlet-gen.XXXX.log)"
 set +e
-sudo "${GEN_BIN}" &> "${GEN_LOG}"
+$SUDO "${GEN_BIN}" &> "${GEN_LOG}"
 GEN_RC=$?
 set -e
 if [ "${GEN_RC}" -ne 0 ]; then
   echo "podman-system-generator exited with ${GEN_RC}. Continuing. Log: ${GEN_LOG}"
 fi
-sudo systemctl daemon-reload
+$SUDO systemctl daemon-reload
 
 GEN_SERVICE="$(find /run/systemd -maxdepth 4 -name 'container-n8n.service' -print -quit)"
 GEN_PG_SERVICE="$(find /run/systemd -maxdepth 4 -name 'container-n8n-postgres.service' -print -quit)"
@@ -75,5 +80,5 @@ if [ -z "${GEN_SERVICE}" ] || [ -z "${GEN_PG_SERVICE}" ]; then
   exit 1
 fi
 
-sudo systemctl enable --now container-n8n-postgres.service container-n8n.service
-sudo systemctl status container-n8n.service --no-pager
+$SUDO systemctl enable --now container-n8n-postgres.service container-n8n.service
+$SUDO systemctl status container-n8n.service --no-pager
