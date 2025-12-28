@@ -1,0 +1,24 @@
+[Unit]
+Description=n8n Postgres database (Podman)
+After=network-online.target podman-network-n8n.service
+Requires=podman-network-n8n.service
+Wants=network-online.target
+
+[Container]
+Image=docker.io/library/postgres:16-alpine
+Name=n8n-postgres
+Network=n8n
+EnvironmentFile=/etc/n8n/n8n.env
+Volume=n8n-postgres:/var/lib/postgresql/data:Z
+Label=io.containers.autoupdate=registry
+Timezone=local
+PublishPort=127.0.0.1:5432:5432
+Restart=always
+
+[Service]
+Restart=always
+RestartSec=5s
+TimeoutStartSec=900
+
+[Install]
+WantedBy=multi-user.target

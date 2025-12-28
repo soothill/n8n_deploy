@@ -1,0 +1,24 @@
+[Unit]
+Description=n8n automation service (Podman)
+After=network-online.target podman-network-n8n.service container-n8n-postgres.service
+Requires=podman-network-n8n.service container-n8n-postgres.service
+Wants=network-online.target
+
+[Container]
+Image=docker.io/n8nio/n8n:latest
+Name=n8n
+Network=n8n
+EnvironmentFile=/etc/n8n/n8n.env
+PublishPort=127.0.0.1:5678:5678
+Volume=n8n-data:/home/node/.n8n:Z
+Volume=n8n-files:/files:Z
+Label=io.containers.autoupdate=registry
+Timezone=local
+Restart=always
+
+[Service]
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
