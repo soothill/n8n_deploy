@@ -52,10 +52,12 @@ sudo podman network inspect n8n >/dev/null 2>&1 || sudo podman network create --
 
 echo "Regenerating systemd units via podman-system-generator..."
 GEN_LOG="$(mktemp /tmp/podman-quadlet-gen.XXXX.log)"
-if ! sudo "${GEN_BIN}" &> "${GEN_LOG}"; then
-  echo "podman-system-generator failed. See log: ${GEN_LOG}"
-  cat "${GEN_LOG}"
-  exit 1
+set +e
+sudo "${GEN_BIN}" &> "${GEN_LOG}"
+GEN_RC=$?
+set -e
+if [ "${GEN_RC}" -ne 0 ]; then
+  echo "podman-system-generator exited with ${GEN_RC}. Continuing. Log: ${GEN_LOG}"
 fi
 sudo systemctl daemon-reload
 
@@ -68,7 +70,7 @@ if [ -z "${GEN_SERVICE}" ] || [ -z "${GEN_PG_SERVICE}" ]; then
   find /run/systemd -maxdepth 3 -name 'container-*.service' -print
   echo "Inputs in /etc/containers/systemd:"
   ls -l /etc/containers/systemd
-  echo "Generator log: ${GEN_LOG}"
+  echo "Generator log (exit ${GEN_RC}): ${GEN_LOG}"
   cat "${GEN_LOG}"
   exit 1
 fi
