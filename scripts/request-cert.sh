@@ -5,7 +5,7 @@ set -euo pipefail
 
 DOMAIN="${DOMAIN:-n8n.soothill.com}"
 EMAIL="${EMAIL:-}"
-WEBROOT="/srv/www/htdocs/letsencrypt"
+WEBROOT="/var/www/letsencrypt"
 CERTBOT_IMAGE="${CERTBOT_IMAGE:-docker.io/certbot/certbot:latest}"
 
 if [[ -z "${EMAIL}" ]]; then
