@@ -17,9 +17,9 @@ sudo install -d -m 755 "${WEBROOT}" /etc/letsencrypt /var/lib/letsencrypt /var/l
 
 sudo podman run --rm \
   --security-opt label=disable \
-  -v "/etc/letsencrypt:/etc/letsencrypt:Z" \
-  -v "/var/lib/letsencrypt:/var/lib/letsencrypt:Z" \
-  -v "/var/log/letsencrypt:/var/log/letsencrypt:Z" \
+  -v "/etc/letsencrypt:/etc/letsencrypt" \
+  -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
+  -v "/var/log/letsencrypt:/var/log/letsencrypt" \
   -v "${WEBROOT}:${WEBROOT}" \
   "${CERTBOT_IMAGE}" certonly \
   --webroot -w "${WEBROOT}" \
