@@ -14,7 +14,19 @@ if ! command -v podman >/dev/null 2>&1; then
   exit 1
 fi
 
-if [ ! -x /usr/lib/systemd/system-generators/podman-system-generator ]; then
+GEN_BIN="${PODMAN_SYSTEM_GENERATOR:-}"
+if [ -z "${GEN_BIN}" ]; then
+  GEN_BIN="$(command -v podman-system-generator || true)"
+fi
+if [ -z "${GEN_BIN}" ]; then
+  for candidate in /usr/lib/systemd/system-generators/podman-system-generator /lib/systemd/system-generators/podman-system-generator; do
+    if [ -x "${candidate}" ]; then
+      GEN_BIN="${candidate}"
+      break
+    fi
+  done
+fi
+if [ -z "${GEN_BIN}" ]; then
   echo "Podman quadlet generator not found. Install podman-quadlet (e.g., sudo transactional-update pkg install podman-quadlet) and reboot."
   exit 1
 fi
@@ -39,7 +51,12 @@ echo "Ensuring Podman network 'n8n' exists..."
 sudo podman network inspect n8n >/dev/null 2>&1 || sudo podman network create --driver bridge --subnet 10.89.0.0/24 --gateway 10.89.0.1 n8n
 
 echo "Regenerating systemd units via podman-system-generator..."
-sudo /usr/lib/systemd/system-generators/podman-system-generator
+GEN_LOG="$(mktemp /tmp/podman-quadlet-gen.XXXX.log)"
+if ! sudo "${GEN_BIN}" &> "${GEN_LOG}"; then
+  echo "podman-system-generator failed. See log: ${GEN_LOG}"
+  cat "${GEN_LOG}"
+  exit 1
+fi
 sudo systemctl daemon-reload
 
 if [ ! -f /run/systemd/generator/container-n8n.service ]; then
