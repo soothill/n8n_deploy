@@ -16,10 +16,11 @@ fi
 sudo install -d -m 755 "${WEBROOT}" /etc/letsencrypt /var/lib/letsencrypt /var/log/letsencrypt
 
 sudo podman run --rm \
+  --security-opt label=disable \
   -v "/etc/letsencrypt:/etc/letsencrypt:Z" \
   -v "/var/lib/letsencrypt:/var/lib/letsencrypt:Z" \
   -v "/var/log/letsencrypt:/var/log/letsencrypt:Z" \
-  -v "${WEBROOT}:${WEBROOT}:Z" \
+  -v "${WEBROOT}:${WEBROOT}" \
   "${CERTBOT_IMAGE}" certonly \
   --webroot -w "${WEBROOT}" \
   -d "${DOMAIN}" \
